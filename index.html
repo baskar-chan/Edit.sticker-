@@ -3,325 +3,244 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>عکاسی با دوربین و کادر اختصاصی</title>
+  <title>عکاسی با دوربین</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ed 100%);
+      font-family: Tahoma, sans-serif;
+      background: #f5f5f5;
       margin: 0;
       padding: 20px;
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      color: #333;
+      min-height: 100vh;
     }
-
-    .header {
+    
+    .container {
+      max-width: 600px;
+      width: 100%;
       text-align: center;
-      margin-bottom: 20px;
     }
-
+    
     h1 {
       color: #2c3e50;
-      font-size: 1.8rem;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
     }
-
-    .camera-container {
+    
+    .camera-box {
       width: 100%;
-      max-width: 600px;
+      background: #000;
       position: relative;
       margin-bottom: 20px;
-      border-radius: 15px;
+      border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     }
-
+    
     #video {
       width: 100%;
       display: block;
-      background-color: #000;
     }
-
-    .frame-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-    }
-
-    .custom-frame {
+    
+    .frame {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       width: 80%;
       height: 60%;
-      border-radius: 20px;
-      border: 3px solid rgba(255, 255, 255, 0.7);
-      box-shadow: 0 0 0 10000px rgba(0, 0, 0, 0.5);
+      border: 3px solid #fff;
+      border-radius: 15px;
+      box-shadow: 0 0 0 1000px rgba(0,0,0,0.5);
     }
-
-    .controls {
+    
+    .buttons {
       display: flex;
       gap: 15px;
-      margin-top: 20px;
-      flex-wrap: wrap;
       justify-content: center;
+      margin-top: 20px;
     }
-
+    
     button {
       padding: 12px 25px;
-      font-size: 1rem;
       border: none;
-      border-radius: 50px;
-      background: linear-gradient(135deg, #6e8efb 0%, #a777e3 100%);
+      border-radius: 30px;
+      background: #3498db;
       color: white;
+      font-size: 1rem;
       cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      transition: all 0.3s;
     }
-
+    
     button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      background: #2980b9;
+      transform: translateY(-2px);
     }
-
-    button:active {
-      transform: translateY(1px);
-    }
-
+    
     button:disabled {
-      background: #bdc3c7;
+      background: #95a5a6;
       cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
     }
-
-    #canvas {
+    
+    .error {
+      color: #e74c3c;
+      margin-top: 20px;
+      padding: 15px;
+      background: #fde8e8;
+      border-radius: 8px;
       display: none;
     }
-
-    .color-options {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .color-option {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      cursor: pointer;
-      border: 2px solid white;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-      transition: transform 0.2s;
-    }
-
-    .color-option:hover {
-      transform: scale(1.1);
-    }
-
-    .color-option.selected {
-      transform: scale(1.15);
-      box-shadow: 0 0 0 3px #3498db;
-    }
-
-    .footer {
+    
+    .permission-help {
       margin-top: 30px;
-      color: #7f8c8d;
-      font-size: 0.9rem;
-      text-align: center;
-    }
-
-    @media (max-width: 600px) {
-      h1 {
-        font-size: 1.5rem;
-      }
-      
-      button {
-        padding: 10px 20px;
-        font-size: 0.9rem;
-      }
-      
-      .custom-frame {
-        width: 90%;
-        height: 70%;
-      }
+      padding: 15px;
+      background: #e8f4fc;
+      border-radius: 8px;
+      text-align: right;
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <h1>عکاسی با دوربین و کادر اختصاصی</h1>
-  </div>
-
-  <div class="camera-container">
-    <video id="video" autoplay playsinline></video>
-    <div class="frame-overlay">
-      <div class="custom-frame"></div>
+  <div class="container">
+    <h1>عکاسی با دوربین</h1>
+    
+    <div class="camera-box">
+      <video id="video" autoplay playsinline></video>
+      <div class="frame"></div>
     </div>
-    <canvas id="canvas"></canvas>
-  </div>
-
-  <div class="color-options">
-    <div class="color-option selected" style="background: #6e8efb;" data-color="#6e8efb"></div>
-    <div class="color-option" style="background: #e74c3c;" data-color="#e74c3c"></div>
-    <div class="color-option" style="background: #2ecc71;" data-color="#2ecc71"></div>
-    <div class="color-option" style="background: #f39c12;" data-color="#f39c12"></div>
-    <div class="color-option" style="background: #9b59b6;" data-color="#9b59b6"></div>
-  </div>
-
-  <div class="controls">
-    <button id="startBtn">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"></circle>
-        <circle cx="12" cy="12" r="3"></circle>
-        <line x1="12" y1="2" x2="12" y2="4"></line>
-        <line x1="12" y1="20" x2="12" y2="22"></line>
-        <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line>
-        <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line>
-        <line x1="2" y1="12" x2="4" y2="12"></line>
-        <line x1="20" y1="12" x2="22" y2="12"></line>
-        <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line>
-        <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
-      </svg>
-      شروع دوربین
-    </button>
-    <button id="captureBtn" disabled>
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-        <circle cx="8.5" cy="8.5" r="1.5"></circle>
-        <polyline points="21 15 16 10 5 21"></polyline>
-      </svg>
-      ثبت عکس
-    </button>
-    <button id="downloadBtn" disabled>
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-        <polyline points="7 10 12 15 17 10"></polyline>
-        <line x1="12" y1="15" x2="12" y2="3"></line>
-      </svg>
-      دانلود عکس
-    </button>
-  </div>
-
-  <div class="footer">
-    تمامی عکس‌ها مستقیماً از دوربین شما گرفته می‌شوند
+    
+    <div class="error" id="errorMsg"></div>
+    
+    <div class="buttons">
+      <button id="startBtn">شروع دوربین</button>
+      <button id="captureBtn" disabled>ثبت عکس</button>
+      <button id="downloadBtn" disabled>دانلود عکس</button>
+    </div>
+    
+    <div class="permission-help">
+      <h3>اگر دوربین کار نمی‌کند:</h3>
+      <ol>
+        <li>مطمئن شوید به سایت اجازه دسترسی به دوربین داده‌اید</li>
+        <li>این صفحه باید روی HTTPS اجرا شود</li>
+        <li>مرورگر خود را آپدیت کنید</li>
+        <li>دوربین دستگاه را بررسی کنید</li>
+      </ol>
+    </div>
   </div>
 
   <script>
     const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
     const startBtn = document.getElementById('startBtn');
     const captureBtn = document.getElementById('captureBtn');
     const downloadBtn = document.getElementById('downloadBtn');
-    const colorOptions = document.querySelectorAll('.color-option');
-    const customFrame = document.querySelector('.custom-frame');
+    const errorMsg = document.getElementById('errorMsg');
     
     let stream = null;
-    let currentFrameColor = '#6e8efb';
     let capturedImage = null;
 
-    // انتخاب رنگ کادر
-    colorOptions.forEach(option => {
-      option.addEventListener('click', () => {
-        colorOptions.forEach(opt => opt.classList.remove('selected'));
-        option.classList.add('selected');
-        currentFrameColor = option.getAttribute('data-color');
-        customFrame.style.borderColor = currentFrameColor;
-      });
-    });
+    // بررسی پشتیبانی مرورگر
+    function checkCameraSupport() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showError('مرورگر شما از دسترسی به دوربین پشتیبانی نمی‌کند. لطفاً از مرورگرهای مدرن مانند Chrome یا Firefox استفاده کنید.');
+        startBtn.disabled = true;
+        return false;
+      }
+      return true;
+    }
+
+    // نمایش خطا
+    function showError(message) {
+      errorMsg.textContent = message;
+      errorMsg.style.display = 'block';
+    }
 
     // شروع دوربین
-    startBtn.addEventListener('click', async () => {
+    async function startCamera() {
+      if (!checkCameraSupport()) return;
+      
       try {
-        stream = await navigator.mediaDevices.getUserMedia({ 
-          video: { 
-            facingMode: 'environment',
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: 'environment', // استفاده از دوربین پشت
             width: { ideal: 1280 },
             height: { ideal: 720 }
           },
-          audio: false 
+          audio: false
         });
         
         video.srcObject = stream;
         startBtn.disabled = true;
         captureBtn.disabled = false;
-        
-        // تنظیم ابعاد canvas متناسب با ویدیو
-        video.addEventListener('loadedmetadata', () => {
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
-        });
+        errorMsg.style.display = 'none';
         
       } catch (err) {
-        alert('خطا در دسترسی به دوربین: ' + err.message);
         console.error('Camera error:', err);
+        
+        if (err.name === 'NotAllowedError') {
+          showError('شما اجازه دسترسی به دوربین را نداده‌اید. لطفاً مجوزها را بررسی کنید.');
+        } else if (err.name === 'NotFoundError') {
+          showError('دوربینی یافت نشد. مطمئن شوید دوربین دستگاه فعال است.');
+        } else if (err.name === 'NotReadableError') {
+          showError('دوربین در حال استفاده توسط برنامه دیگری است.');
+        } else {
+          showError('خطا در دسترسی به دوربین: ' + err.message);
+        }
       }
-    });
+    }
 
     // ثبت عکس
-    captureBtn.addEventListener('click', () => {
-      if (!stream) return;
+    function capturePhoto() {
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
       
-      // ترسیم ویدیو روی canvas
+      // رسم عکس با کادر
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       
-      // ایجاد کادر گرد روی عکس
+      // ایجاد کادر گرد
       const frameWidth = canvas.width * 0.8;
       const frameHeight = canvas.height * 0.6;
       const frameX = (canvas.width - frameWidth) / 2;
       const frameY = (canvas.height - frameHeight) / 2;
-      const borderRadius = 30;
+      const radius = 30;
       
-      // ایجاد مسیر کلیپ (گرد کردن گوشه‌ها)
       ctx.beginPath();
-      ctx.moveTo(frameX + borderRadius, frameY);
-      ctx.lineTo(frameX + frameWidth - borderRadius, frameY);
-      ctx.quadraticCurveTo(frameX + frameWidth, frameY, frameX + frameWidth, frameY + borderRadius);
-      ctx.lineTo(frameX + frameWidth, frameY + frameHeight - borderRadius);
-      ctx.quadraticCurveTo(frameX + frameWidth, frameY + frameHeight, frameX + frameWidth - borderRadius, frameY + frameHeight);
-      ctx.lineTo(frameX + borderRadius, frameY + frameHeight);
-      ctx.quadraticCurveTo(frameX, frameY + frameHeight, frameX, frameY + frameHeight - borderRadius);
-      ctx.lineTo(frameX, frameY + borderRadius);
-      ctx.quadraticCurveTo(frameX, frameY, frameX + borderRadius, frameY);
+      ctx.moveTo(frameX + radius, frameY);
+      ctx.arcTo(frameX + frameWidth, frameY, frameX + frameWidth, frameY + frameHeight, radius);
+      ctx.arcTo(frameX + frameWidth, frameY + frameHeight, frameX, frameY + frameHeight, radius);
+      ctx.arcTo(frameX, frameY + frameHeight, frameX, frameY, radius);
+      ctx.arcTo(frameX, frameY, frameX + frameWidth, frameY, radius);
       ctx.closePath();
       ctx.clip();
       
-      // ذخیره عکس برای دانلود
-      capturedImage = canvas.toDataURL('image/webp', 0.92);
+      capturedImage = canvas.toDataURL('image/webp', 0.9);
       downloadBtn.disabled = false;
       
-      alert('عکس با موفقیت ثبت شد! حالا می‌توانید آن را دانلود کنید.');
-    });
+      alert('عکس با موفقیت ثبت شد!');
+    }
 
     // دانلود عکس
-    downloadBtn.addEventListener('click', () => {
-      if (!capturedImage) return;
-      
+    function downloadPhoto() {
       const link = document.createElement('a');
-      link.download = 'عکس-دوربین-' + new Date().toLocaleDateString('fa-IR') + '.webp';
+      link.download = 'عکس-دوربین-' + new Date().toISOString().slice(0,10) + '.webp';
       link.href = capturedImage;
       link.click();
-    });
+    }
 
-    // توقف جریان دوربین هنگام بستن صفحه
+    // رویدادها
+    startBtn.addEventListener('click', startCamera);
+    captureBtn.addEventListener('click', capturePhoto);
+    downloadBtn.addEventListener('click', downloadPhoto);
+
+    // توقف دوربین هنگام بستن صفحه
     window.addEventListener('beforeunload', () => {
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
       }
     });
+
+    // بررسی اولیه پشتیبانی
+    checkCameraSupport();
   </script>
 </body>
 </html>
